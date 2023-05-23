@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ReactNode } from "react";
 
 type LayoutProps = {
@@ -7,7 +8,8 @@ type LayoutProps = {
 export const Layout = ({ children }: LayoutProps) => {
   return (
     <>
-      <h2>This is layout</h2>
+      <Link href="/">Home</Link>
+      <Link href="/list">List</Link>
       {children}
     </>
   );
