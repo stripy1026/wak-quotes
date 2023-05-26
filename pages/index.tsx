@@ -18,7 +18,6 @@ export default function Home() {
         body: JSON.stringify({ message }),
       });
       const json = await response.json();
-      console.log("RESULT: ", json);
     } catch (e) {
       console.log(e);
     }
