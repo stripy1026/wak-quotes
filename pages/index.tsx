@@ -11,12 +11,16 @@ export default function Home() {
     setQuote(message);
     try {
       const response = await fetch(`api/postQuote`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'content-type': 'application/json'
+          "content-type": "application/json",
         },
-        body: JSON.stringify({ message })
-      })
+        body: JSON.stringify({ message }),
+      });
+      const json = await response.json();
+      console.log("RESULT: ", json);
+    } catch (e) {
+      console.log(e);
     }
   };
 

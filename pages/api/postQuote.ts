@@ -1,7 +1,9 @@
+import clientPromise from "@/lib/mongodb";
+import { InsertOneResult } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-  name?: string;
+  result?: InsertOneResult<Document>;
   err?: string;
 };
 
@@ -9,11 +11,19 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  const client = await clientPromise;
+  const db = client.db(process.env.DB_NAME);
+
   if (req.method !== "POST")
     return res.status(405).json({ err: "Method Not Allowed." });
 
-  const data = req.body;
-  console.log("DATA: ", data);
+  const { message } = req.body;
 
-  res.status(200).json({ name: "John Doe" });
+  if (!message || message.length > 80) return res.status(422);
+
+  const quote = await db
+    .collection(process.env.QUOTES_COLLECTION_NAME as string)
+    .insertOne({ message });
+
+  res.status(200).json({ result: quote });
 }
