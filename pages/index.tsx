@@ -6,9 +6,18 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [quote, setQuote] = useState("");
 
-  const addQuoteMessage = (e: FormEvent<HTMLFormElement>) => {
+  const addQuoteMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setQuote(message);
+    try {
+      const response = await fetch(`api/postQuote`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ message })
+      })
+    }
   };
 
   return (
