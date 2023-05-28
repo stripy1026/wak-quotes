@@ -8,6 +8,16 @@
   --background-end-rgb: 0, 0, 0;
 }
 
+/* Responsive styles for 768px */
+@media (min-width: 768px) {
+  /* Add responsive styles here */
+}
+
+/* Responsive styles for 1024px */
+@media (min-width: 1024px) {
+  /* Add responsive styles here */
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;

@@ -26,22 +26,49 @@ export default function Home() {
     }
   };
 
+  // return (
+  //   <>
+  //     <h1>WAK QUOTES</h1>
+  //     <QuoteTemplate quote={quote} />
+  //     <form onSubmit={handleaddQuoteMessage}>
+  //       <label>
+  //         <strong>우왁굳이 말하게 하고 싶은 명언은 ?</strong>
+  //       </label>
+  //       <textarea
+  //         className="bg-slate-700"
+  //         value={message}
+  //         onChange={(e) => setMessage(e.target.value)}
+  //         maxLength={80}
+  //       />
+  //       <button type="submit">입력</button>
+  //     </form>
+  //   </>
+  // );
+
+  // ChatGPT styles
+
   return (
     <>
-      <h1>WAK QUOTES</h1>
+      <h1 className="text-3xl font-bold">WAK QUOTES</h1>
       <QuoteTemplate quote={quote} />
       <form onSubmit={handleaddQuoteMessage}>
-        <label>
+        <label className="block mt-4">
           <strong>우왁굳이 말하게 하고 싶은 명언은 ?</strong>
         </label>
         <textarea
-          className="bg-slate-700"
+          className="bg-slate-700 block w-full p-2 mt-2 rounded"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           maxLength={80}
         />
-        <button type="submit">입력</button>
+        <button
+          type="submit"
+          className="px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          입력
+        </button>
       </form>
     </>
   );
+
 }

@@ -6,10 +6,32 @@ type LayoutProps = {
 };
 
 export const Layout = ({ children }: LayoutProps) => {
+  // return (
+  //   <>
+  //     <Link href="/">Home</Link>
+  //     <Link href="/list">List</Link>
+  //     {children}
+  //   </>
+  // );
+
+  // ChatGPT styles
+
   return (
     <>
-      <Link href="/">Home</Link>
-      <Link href="/list">List</Link>
+      <nav className="bg-gray-900 py-4">
+        <ul className="flex justify-center space-x-6">
+          <li>
+            <Link className="text-white hover:text-gray-300" href="/">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link className="text-white hover:text-gray-300" href="/list">
+              List
+            </Link>
+          </li>
+        </ul>
+      </nav>
       {children}
     </>
   );
