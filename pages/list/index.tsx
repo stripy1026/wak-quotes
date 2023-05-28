@@ -12,14 +12,21 @@ type ListProps = {
 };
 
 export default function List({ quotes }: ListProps) {
+  const handleDeleteQuote = (quoteId: string) => {
+    console.log(quoteId); // deleteQuote
+  };
+
   return (
     <>
       <h1> This is List Page</h1>
       <ul>
         {quotes.map((quote) => (
-          <Link key={quote.id} href={`/list/${quote.id}`}>
-            <QuoteTemplate width={400} quote={quote.message} />
-          </Link>
+          <>
+            <Link key={quote.id} href={`/list/${quote.id}`}>
+              <QuoteTemplate width={400} quote={quote.message} />
+            </Link>
+            <button onClick={() => handleDeleteQuote(quote.id)}>Delete</button>
+          </>
         ))}
       </ul>
     </>

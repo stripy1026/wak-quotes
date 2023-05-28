@@ -8,7 +8,7 @@ export default function Home() {
   const [quote, setQuote] = useState("");
   const router = useRouter();
 
-  const addQuoteMessage = async (e: FormEvent<HTMLFormElement>) => {
+  const handleaddQuoteMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setQuote(message);
     try {
@@ -30,7 +30,7 @@ export default function Home() {
     <>
       <h1>WAK QUOTES</h1>
       <QuoteTemplate quote={quote} />
-      <form onSubmit={addQuoteMessage}>
+      <form onSubmit={handleaddQuoteMessage}>
         <label>
           <strong>우왁굳이 말하게 하고 싶은 명언은 ?</strong>
         </label>
