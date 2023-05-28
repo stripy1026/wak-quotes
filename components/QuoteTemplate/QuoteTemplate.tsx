@@ -2,15 +2,11 @@ import Image from "next/image";
 
 type QuoteTemplateProps = {
   width?: number;
-  height?: number;
   quote: string;
 };
 
-export const QuoteTemplate = ({
-  width = 800,
-  height = 450,
-  quote,
-}: QuoteTemplateProps) => {
+export const QuoteTemplate = ({ width = 800, quote }: QuoteTemplateProps) => {
+  const height = (width * 450) / 800;
   return (
     <>
       <Image
