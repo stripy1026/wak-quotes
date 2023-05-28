@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import clientPromise from "@/lib/mongodb";
 import { QuoteTemplate } from "@/components/QuoteTemplate";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 type ListProps = {
   quotes: {
@@ -12,8 +13,24 @@ type ListProps = {
 };
 
 export default function List({ quotes }: ListProps) {
-  const handleDeleteQuote = (quoteId: string) => {
-    console.log(quoteId); // deleteQuote
+  const router = useRouter();
+
+  const handleDeleteQuote = async (quoteId: string) => {
+    try {
+      const response = await fetch(`api/deleteQuote`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ quoteId }),
+      });
+      const { success } = await response.json();
+      if (success === true) {
+        router.replace(router.asPath);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -21,12 +38,12 @@ export default function List({ quotes }: ListProps) {
       <h1> This is List Page</h1>
       <ul>
         {quotes.map((quote) => (
-          <>
-            <Link key={quote.id} href={`/list/${quote.id}`}>
+          <div key={quote.id}>
+            <Link href={`/list/${quote.id}`}>
               <QuoteTemplate width={400} quote={quote.message} />
             </Link>
             <button onClick={() => handleDeleteQuote(quote.id)}>Delete</button>
-          </>
+          </div>
         ))}
       </ul>
     </>
