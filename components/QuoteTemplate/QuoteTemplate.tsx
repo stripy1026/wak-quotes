@@ -8,10 +8,8 @@ type QuoteTemplateProps = {
 export const QuoteTemplate = ({ width = 800, quote }: QuoteTemplateProps) => {
   const height = (width * 450) / 800;
   const textSize = width <= 400 ? "text-2xl" : "text-4xl";
-  const translate =
-    width <= 400
-      ? "transform translate-x-3/4 translate-y-1/2"
-      : "transform translate-x-1/2 translate-y-1/2";
+  const marginX = width <= 400 ? "mr-2" : "mr-10";
+
   return (
     <div className="relative inline-block">
       <Image
@@ -21,7 +19,7 @@ export const QuoteTemplate = ({ width = 800, quote }: QuoteTemplateProps) => {
         alt="quote"
       />
       <span
-        className={`absolute top-1/3 right-1/4 ${translate} text-white ${textSize} font-bold text-center`}
+        className={`absolute ${marginX} top-1/3 left-2/3 text-white ${textSize} font-bold text-center`}
       >
         {quote}
       </span>
