@@ -60,6 +60,7 @@ export default function Home() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           maxLength={80}
+          placeholder="Write length under 80."
         />
         <button
           type="submit"
@@ -70,5 +71,4 @@ export default function Home() {
       </form>
     </>
   );
-
 }
