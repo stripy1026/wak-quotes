@@ -1,10 +1,12 @@
 import { FormEvent, useState } from "react";
 
 import { QuoteTemplate } from "@/components/QuoteTemplate";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [message, setMessage] = useState("");
   const [quote, setQuote] = useState("");
+  const router = useRouter();
 
   const addQuoteMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,7 +19,8 @@ export default function Home() {
         },
         body: JSON.stringify({ message }),
       });
-      const json = await response.json();
+      const { quoteId } = await response.json();
+      if (quoteId) router.push(`/list/${quoteId}`);
     } catch (e) {
       console.log(e);
     }

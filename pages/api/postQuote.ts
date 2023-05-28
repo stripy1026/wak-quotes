@@ -3,7 +3,7 @@ import { InsertOneResult } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-  result?: InsertOneResult<Document>;
+  quoteId?: string;
   err?: string;
 };
 
@@ -25,5 +25,7 @@ export default async function handler(
     .collection(process.env.QUOTES_COLLECTION_NAME as string)
     .insertOne({ message });
 
-  res.status(200).json({ result: quote });
+  const quoteId = quote.insertedId.toString();
+
+  res.status(200).json({ quoteId });
 }
