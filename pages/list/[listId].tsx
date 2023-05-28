@@ -1,3 +1,4 @@
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 
 export default function ListId() {
@@ -9,3 +10,10 @@ export default function ListId() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  console.log(ctx);
+  return {
+    props: {},
+  };
+};
