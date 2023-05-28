@@ -2,7 +2,7 @@ import clientPromise from "@/lib/mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
-  quoteId?: string;
+  message?: string;
   err?: string;
 };
 
@@ -13,18 +13,16 @@ export default async function handler(
   const client = await clientPromise;
   const db = client.db(process.env.DB_NAME);
 
-  if (req.method !== "POST")
+  if (req.method !== "GET")
     return res.status(405).json({ err: "Method Not Allowed." });
 
-  const { message } = req.body;
+  const { insertedId } = req.body;
 
-  if (!message || message.length > 80) return res.status(422);
+  if (!insertedId) return res.status(422);
 
   const quote = await db
     .collection(process.env.QUOTES_COLLECTION_NAME as string)
-    .insertOne({ message });
+    .findOne({ insertedId });
 
-  const quoteId = quote.insertedId.toString();
-
-  res.status(200).json({ quoteId });
+  res.status(200).json({ quote.message });
 }
