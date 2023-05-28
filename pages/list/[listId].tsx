@@ -1,24 +1,42 @@
-import { QuoteTemplate } from "@/components/QuoteTemplate";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
+
+import clientPromise from "@/lib/mongodb";
+
+import { QuoteTemplate } from "@/components/QuoteTemplate";
+import { ObjectId } from "mongodb";
 
 type ListIdProps = {
-  quote: string;
+  message: string;
 };
 
-export default function ListId({ quote }: ListIdProps) {
-  const router = useRouter();
+export default function ListId({ message }: ListIdProps) {
   return (
     <>
       <h3>This is ListId page</h3>
-      <QuoteTemplate quote={quote} />
+      <QuoteTemplate quote={message} />
     </>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  console.log(ctx.query.listId);
+  const listId: string = ctx.query.listId as string;
+  const client = await clientPromise;
+  const db = client.db(process.env.DB_NAME);
+
+  const quote = await db
+    .collection(process.env.QUOTES_COLLECTION_NAME as string)
+    .findOne({ _id: new ObjectId(listId) });
+
+  if (quote === null) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
   return {
-    props: { quote },
+    props: { message: quote.message },
   };
 };
