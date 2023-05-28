@@ -1,15 +1,24 @@
 import { GetServerSideProps } from "next";
 
 import clientPromise from "@/lib/mongodb";
+import { QuoteTemplate } from "@/components/QuoteTemplate";
 
 type ListProps = {
-  quotes: string[];
+  quotes: {
+    id: string;
+    message: string;
+  }[];
 };
 
 export default function List({ quotes }: ListProps) {
   return (
     <>
       <h1> This is List Page</h1>
+      <ul>
+        {quotes.map((quote) => (
+          <QuoteTemplate key={quote.id} quote={quote.message} />
+        ))}
+      </ul>
     </>
   );
 }
@@ -35,6 +44,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       quotes: quotes.map((quote) => ({
+        id: quote._id.toString(),
         message: quote.message,
       })),
     },
