@@ -33,36 +33,19 @@ export default function List({ quotes }: ListProps) {
     }
   };
 
-  // return (
-  //   <>
-  //     <h1> This is List Page</h1>
-  //     <ul>
-  //       {quotes.map((quote) => (
-  //         <div key={quote.id}>
-  //           <Link href={`/list/${quote.id}`}>
-  //             <QuoteTemplate width={400} quote={quote.message} />
-  //           </Link>
-  //           <button onClick={() => handleDeleteQuote(quote.id)}>Delete</button>
-  //         </div>
-  //       ))}
-  //     </ul>
-  //   </>
-  // );
-
-  // chatGPT styles
   return (
     <div className="p-4">
       <ul>
         {quotes.map((quote) => (
-          <div className="mb-4" key={quote.id}>
+          <div className="mb-4 relative" key={quote.id}>
             <Link href={`/list/${quote.id}`}>
               <QuoteTemplate width={350} quote={quote.message} />
             </Link>
             <button
-              className="bg-red-500 text-white px-4 py-2 rounded"
+              className="absolute top-2/3 -right-20 bg-red-700 text-white ml-2 px-4 py-2 rounded"
               onClick={() => handleDeleteQuote(quote.id)}
             >
-              Delete
+              삭제
             </button>
           </div>
         ))}

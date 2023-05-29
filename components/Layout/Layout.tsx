@@ -6,16 +6,6 @@ type LayoutProps = {
 };
 
 export const Layout = ({ children }: LayoutProps) => {
-  // return (
-  //   <>
-  //     <Link href="/">Home</Link>
-  //     <Link href="/list">List</Link>
-  //     {children}
-  //   </>
-  // );
-
-  // ChatGPT styles
-
   return (
     <>
       <nav className="bg-gray-900 py-4">
