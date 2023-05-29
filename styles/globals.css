@@ -36,4 +36,5 @@ body {
     )
     rgb(var(--background-start-rgb));
   justify-content: center;
+  padding-top: 50px;
 }
