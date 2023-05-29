@@ -19,9 +19,11 @@ export const QuoteTemplate = ({ width = 700, quote }: QuoteTemplateProps) => {
         alt="quote"
       />
       <span
-        className={`absolute ${marginX} top-1/3 left-1/2 text-white ${textSize} font-bold text-center`}
+        className={`absolute ${marginX} top-1/3 left-1/2 text-white ${textSize} ${
+          width > 350 && "font-bold"
+        } font-serif text-center`}
       >
-        {quote}
+        {`"${quote}"`}
       </span>
     </div>
   );
