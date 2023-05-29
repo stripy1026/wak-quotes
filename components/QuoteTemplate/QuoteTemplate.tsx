@@ -5,10 +5,10 @@ type QuoteTemplateProps = {
   quote: string;
 };
 
-export const QuoteTemplate = ({ width = 800, quote }: QuoteTemplateProps) => {
-  const height = (width * 450) / 800;
-  const textSize = width <= 400 ? "text-2xl" : "text-4xl";
-  const marginX = width <= 400 ? "mr-2" : "mr-10";
+export const QuoteTemplate = ({ width = 700, quote }: QuoteTemplateProps) => {
+  const height = (width * 350) / 700;
+  const textSize = width <= 350 ? "text-xl" : "text-4xl";
+  const marginX = width <= 350 ? "mr-2" : "mr-10";
 
   return (
     <div className="relative inline-block">

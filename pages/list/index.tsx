@@ -56,7 +56,7 @@ export default function List({ quotes }: ListProps) {
         {quotes.map((quote) => (
           <div className="mb-4" key={quote.id}>
             <Link href={`/list/${quote.id}`}>
-              <QuoteTemplate width={400} quote={quote.message} />
+              <QuoteTemplate width={350} quote={quote.message} />
             </Link>
             <button
               className="bg-red-500 text-white px-4 py-2 rounded"
