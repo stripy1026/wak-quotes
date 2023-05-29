@@ -23,7 +23,7 @@ export const QuoteTemplate = ({ width = 700, quote }: QuoteTemplateProps) => {
           width > 350 && "font-bold"
         } font-serif text-center`}
       >
-        {`"${quote}"`}
+        {quote}
       </span>
     </div>
   );
