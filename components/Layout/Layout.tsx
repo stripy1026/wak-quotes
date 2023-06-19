@@ -52,8 +52,8 @@ export const Layout = ({ children }: LayoutProps) => {
             <li>
               <Image
                 src={user.picture || ""}
-                width={30}
-                height={30}
+                width={25}
+                height={25}
                 alt={user.name || "user"}
               />
             </li>
