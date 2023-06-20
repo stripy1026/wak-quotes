@@ -16,13 +16,14 @@ export default async function handler(
   if (req.method !== "POST")
     return res.status(405).json({ err: "Method Not Allowed." });
 
-  const { message } = req.body;
+  const { message, userId } = req.body;
 
   if (!message || message.length > 80) return res.status(422);
+  if (!userId) return res.status(422);
 
   const quote = await db
     .collection(process.env.QUOTES_COLLECTION_NAME as string)
-    .insertOne({ message });
+    .insertOne({ message, userId });
 
   const quoteId = quote.insertedId.toString();
 

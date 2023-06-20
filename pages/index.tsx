@@ -3,13 +3,22 @@ import { FormEvent, useState } from "react";
 import { QuoteTemplate } from "@/components/QuoteTemplate";
 import { useRouter } from "next/router";
 
+import { useUser } from "@auth0/nextjs-auth0/client";
+
 export default function Home() {
   const [message, setMessage] = useState("");
   const [quote, setQuote] = useState("");
   const router = useRouter();
+  const { user, error, isLoading } = useUser();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
 
   const handleaddQuoteMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!user) return; // just show quote in main page
+
     setQuote(message);
     try {
       const response = await fetch(`api/postQuote`, {
@@ -17,7 +26,7 @@ export default function Home() {
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, userId: user.sub }),
       });
       const { quoteId } = await response.json();
       if (quoteId) router.push(`/list/${quoteId}`);
