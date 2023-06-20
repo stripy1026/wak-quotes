@@ -5,6 +5,8 @@ import { QuoteTemplate } from "@/components/QuoteTemplate";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
+import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+
 type ListProps = {
   quotes: {
     id: string;
@@ -54,30 +56,35 @@ export default function List({ quotes }: ListProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const client = await clientPromise;
-  const db = client.db(process.env.DB_NAME);
+export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
+  async getServerSideProps(ctx) {
+    const userSession = await getSession(ctx.req, ctx.res);
+    const client = await clientPromise;
+    const db = client.db(process.env.DB_NAME);
 
-  const quotes = await db
-    .collection(process.env.QUOTES_COLLECTION_NAME as string)
-    .find()
-    .toArray();
+    const quotes = await db
+      .collection(process.env.QUOTES_COLLECTION_NAME as string)
+      .find({
+        userId: userSession?.user.sub,
+      })
+      .toArray();
 
-  if (quotes === null) {
+    if (quotes === null) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+
     return {
-      redirect: {
-        destination: "/",
-        permanent: false,
+      props: {
+        quotes: quotes.map((quote) => ({
+          id: quote._id.toString(),
+          message: quote.message,
+        })),
       },
     };
-  }
-
-  return {
-    props: {
-      quotes: quotes.map((quote) => ({
-        id: quote._id.toString(),
-        message: quote.message,
-      })),
-    },
-  };
-};
+  },
+});
