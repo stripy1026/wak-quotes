@@ -11,6 +11,7 @@ type ListProps = {
   quotes: {
     id: string;
     message: string;
+    likes: number;
   }[];
 };
 
@@ -49,6 +50,7 @@ export default function List({ quotes }: ListProps) {
             >
               삭제
             </button>
+            <p>likes: {quote.likes}</p>
           </div>
         ))}
       </ul>
@@ -83,6 +85,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
         quotes: quotes.map((quote) => ({
           id: quote._id.toString(),
           message: quote.message,
+          likes: quote.likes,
         })),
       },
     };

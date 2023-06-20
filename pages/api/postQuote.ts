@@ -21,9 +21,11 @@ export default async function handler(
   if (!message || message.length > 80) return res.status(422);
   if (!userId) return res.status(422);
 
+  const likes: number = 0;
+
   const quote = await db
     .collection(process.env.QUOTES_COLLECTION_NAME as string)
-    .insertOne({ message, userId });
+    .insertOne({ message, userId, likes });
 
   const quoteId = quote.insertedId.toString();
 

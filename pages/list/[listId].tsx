@@ -7,13 +7,15 @@ import { ObjectId } from "mongodb";
 
 type ListIdProps = {
   message: string;
+  likes: number;
 };
 
-export default function ListId({ message }: ListIdProps) {
+export default function ListId({ message, likes }: ListIdProps) {
   return (
     <>
       <h3>This is ListId page</h3>
       <QuoteTemplate quote={message} />
+      <p>likes : {likes}</p>
     </>
   );
 }
@@ -37,6 +39,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   return {
-    props: { message: quote.message },
+    props: { message: quote.message, likes: quote.likes },
   };
 };
