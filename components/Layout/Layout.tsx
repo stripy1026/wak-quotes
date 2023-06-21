@@ -45,22 +45,22 @@ export const Layout = ({ children }: LayoutProps) => {
           )}
           {user && (
             <li>
-              <Link
-                className="text-white hover:text-gray-300"
-                href="/api/auth/logout"
-              >
-                Logout
-              </Link>
-            </li>
-          )}
-          {user && (
-            <li>
               <Image
                 src={user.picture || ""}
                 width={25}
                 height={25}
                 alt={user.name || "user"}
               />
+            </li>
+          )}
+          {user && (
+            <li>
+              <Link
+                className="text-white hover:text-gray-300"
+                href="/api/auth/logout"
+              >
+                Logout
+              </Link>
             </li>
           )}
         </ul>
