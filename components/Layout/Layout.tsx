@@ -28,6 +28,11 @@ export const Layout = ({ children }: LayoutProps) => {
               List
             </Link>
           </li>
+          <li>
+            <Link className="text-white hover:text-gray-300" href="/ranking">
+              Ranking
+            </Link>
+          </li>
           {!user && (
             <li>
               <Link
