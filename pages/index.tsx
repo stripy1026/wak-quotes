@@ -8,8 +8,11 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 export default function Home() {
   const [message, setMessage] = useState("");
   const [quote, setQuote] = useState("");
+
   const router = useRouter();
   const { user, error, isLoading } = useUser();
+
+  const [maxQuotes, setMaxQuotes] = useState(false);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -17,9 +20,9 @@ export default function Home() {
   const handleaddQuoteMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!user) return; // just show quote in main page
-
     setQuote(message);
+    if (!user) return;
+
     try {
       const response = await fetch(`api/postQuote`, {
         method: "POST",
@@ -28,7 +31,9 @@ export default function Home() {
         },
         body: JSON.stringify({ message, userId: user.sub }),
       });
-      const { quoteId } = await response.json();
+      const { quoteId, err } = await response.json();
+      console.log(err);
+      if (err === "Maximum 10 quotes.") return setMaxQuotes(true);
       if (quoteId) router.push(`/list/${quoteId}`);
     } catch (e) {
       console.log(e);
@@ -56,6 +61,9 @@ export default function Home() {
         >
           입력
         </button>
+        {maxQuotes && (
+          <p className="text-red-700">10개 이상의 명언은 저장되지 않습니다!</p>
+        )}
       </form>
     </>
   );
