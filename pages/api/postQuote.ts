@@ -1,4 +1,5 @@
 import clientPromise from "@/lib/mongodb";
+
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
@@ -22,10 +23,11 @@ export default async function handler(
   if (!userId) return res.status(422);
 
   const likes: number = 0;
+  const voteList: string[] = [];
 
   const quote = await db
     .collection(process.env.QUOTES_COLLECTION_NAME as string)
-    .insertOne({ message, userId, likes });
+    .insertOne({ message, userId, likes, voteList });
 
   const quoteId = quote.insertedId.toString();
 

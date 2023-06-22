@@ -1,5 +1,9 @@
 import { ObjectId } from "mongodb";
+
 import clientPromise from "@/lib/mongodb";
+
+import { getSession } from "@auth0/nextjs-auth0";
+
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
@@ -12,6 +16,11 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   try {
+    const session = await getSession(req, res);
+    const user = session?.user;
+
+    if (!user) return res.status(422);
+
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
 
@@ -27,11 +36,28 @@ export default async function handler(
         .status(422)
         .json({ success: false, err: "Server can't process your request." });
 
+    const quote = await db
+      .collection(process.env.QUOTES_COLLECTION_NAME as string)
+      .findOne({ _id: new ObjectId(quoteId) });
+
+    if (!quote)
+      return res
+        .status(422)
+        .json({ success: false, err: "There is no such quote." });
+
+    if (quote.voteList.includes(user.sub))
+      return res
+        .status(422)
+        .json({ success: false, err: "You already liked." });
+
     await db.collection(process.env.QUOTES_COLLECTION_NAME as string).updateOne(
       { _id: new ObjectId(quoteId) },
       {
         $inc: {
           likes: 1,
+        },
+        $push: {
+          voteList: user.sub,
         },
       }
     );
