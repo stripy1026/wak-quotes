@@ -31,6 +31,10 @@ export default async function handler(
 
   const likes: number = 0;
   const voteList: string[] = [];
+  const nickname = user.nickname;
+
+  const dt = new Date();
+  const date = dt.toLocaleString();
 
   const quotes = await db
     .collection(process.env.QUOTES_COLLECTION_NAME as string)
@@ -44,7 +48,7 @@ export default async function handler(
 
   const quote = await db
     .collection(process.env.QUOTES_COLLECTION_NAME as string)
-    .insertOne({ message, userId, likes, voteList });
+    .insertOne({ message, userId, likes, voteList, nickname, date });
 
   const quoteId = quote.insertedId.toString();
 

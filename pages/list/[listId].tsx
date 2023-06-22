@@ -8,14 +8,23 @@ import { ObjectId } from "mongodb";
 type ListIdProps = {
   message: string;
   likes: number;
+  nickname: string;
+  date: string;
 };
 
-export default function ListId({ message, likes }: ListIdProps) {
+export default function ListId({
+  message,
+  likes,
+  nickname,
+  date,
+}: ListIdProps) {
   return (
     <>
       <h3>This is ListId page</h3>
       <QuoteTemplate quote={message} />
       <p>likes : {likes}</p>
+      <p>작성자 : {nickname}</p>
+      <p>작성일 : {date}</p>
     </>
   );
 }
@@ -39,6 +48,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   return {
-    props: { message: quote.message, likes: quote.likes },
+    props: {
+      message: quote.message,
+      likes: quote.likes,
+      nickname: quote.nickname,
+      date: quote.date,
+    },
   };
 };

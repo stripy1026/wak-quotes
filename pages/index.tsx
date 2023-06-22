@@ -21,6 +21,7 @@ export default function Home() {
     e.preventDefault();
 
     setQuote(message);
+
     if (!user) return;
 
     try {
