@@ -5,18 +5,27 @@ import { QuoteTemplate } from "@/components/QuoteTemplate";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { useUser } from "@auth0/nextjs-auth0/client";
+
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 
 type ListProps = {
   quotes: {
     id: string;
     message: string;
     likes: number;
+    voteList: string[];
   }[];
 };
 
 export default function Ranking({ quotes }: ListProps) {
   const router = useRouter();
+  const { user, error, isLoading } = useUser();
+
+  if (!user) return <div>There is no user</div>;
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
 
   const handlePostLikesQuote = async (quoteId: string) => {
     try {
@@ -45,7 +54,12 @@ export default function Ranking({ quotes }: ListProps) {
               <QuoteTemplate width={350} quote={quote.message} />
             </Link>
             <button
-              className="absolute top-2/3 -right-20 bg-blue-700 text-white ml-2 px-4 py-2 rounded"
+              className={`absolute top-2/3 -right-20  ${
+                quote.voteList.includes(user.sub as string)
+                  ? ` bg-blue-700/20 text-white/20`
+                  : `bg-blue-700 text-white`
+              }  ml-2 px-4 py-2 rounded `}
+              disabled={quote.voteList.includes(user.sub as string)}
               onClick={() => handlePostLikesQuote(quote.id)}
             >
               like
@@ -59,8 +73,7 @@ export default function Ranking({ quotes }: ListProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
-  async getServerSideProps(ctx) {
-    const userSession = await getSession(ctx.req, ctx.res);
+  async getServerSideProps() {
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
 
@@ -85,6 +98,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
           id: quote._id.toString(),
           message: quote.message,
           likes: quote.likes,
+          voteList: quote.voteList,
         })),
       },
     };
