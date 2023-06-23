@@ -14,6 +14,7 @@ type ListProps = {
     message: string;
     likes: number;
     voteList: string[];
+    nickname: string;
   }[];
 };
 
@@ -21,6 +22,7 @@ export default function Ranking({ quotes }: ListProps) {
   const router = useRouter();
   const { user, error, isLoading } = useUser();
 
+  const [listQuotes, setListQuotes] = useState(quotes);
   const [message, setMessage] = useState("");
   const [searchOption, setSearchOption] = useState("quote");
 
@@ -30,7 +32,11 @@ export default function Ranking({ quotes }: ListProps) {
   const handleSearchQuotes = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log("Selected option value:", searchOption);
+    if (searchOption === "quote") {
+      setListQuotes(quotes.filter((quote) => quote.message.includes(message)));
+    } else if (searchOption === "nick") {
+      setListQuotes(quotes.filter((quote) => quote.nickname.includes(message)));
+    }
   };
 
   const handlePostLikesQuote = async (quoteId: string) => {
@@ -59,7 +65,7 @@ export default function Ranking({ quotes }: ListProps) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           maxLength={80}
-          placeholder="1-80자 검색"
+          placeholder="80자 이내 검색"
         />
         <select
           className="flex-none bg-slate-700 mt-2 mr-2"
@@ -79,7 +85,7 @@ export default function Ranking({ quotes }: ListProps) {
         </button>
       </form>
       <ul>
-        {quotes.map((quote) => (
+        {listQuotes.map((quote) => (
           <div className="mb-4 relative" key={quote.id}>
             <Link href={`/list/${quote.id}`}>
               <QuoteTemplate width={350} quote={quote.message} />
@@ -131,6 +137,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         message: quote.message,
         likes: quote.likes,
         voteList: quote.voteList,
+        nickname: quote.nickname,
       })),
     },
   };
