@@ -104,6 +104,7 @@ export default function Ranking({ quotes }: ListProps) {
               </button>
             )}
             <p>likes: {quote.likes}</p>
+            <p>작성자: {quote.nickname}</p>
           </div>
         ))}
       </ul>
