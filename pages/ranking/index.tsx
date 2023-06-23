@@ -15,6 +15,7 @@ type ListProps = {
     likes: number;
     voteList: string[];
     nickname: string;
+    date: string;
   }[];
 };
 
@@ -25,6 +26,8 @@ export default function Ranking({ quotes }: ListProps) {
   const [listQuotes, setListQuotes] = useState(quotes);
   const [message, setMessage] = useState("");
   const [searchOption, setSearchOption] = useState("quote");
+
+  const [filterOption, setFilterOption] = useState("likes");
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -57,6 +60,27 @@ export default function Ranking({ quotes }: ListProps) {
     }
   };
 
+  const handleFilterChange = () => {
+    console.log(filterOption);
+    if (filterOption === "likes") {
+      setListQuotes((prev) =>
+        [...prev].sort((a, b) => {
+          if (a.likes > b.likes) return 1;
+          if (a.likes < b.likes) return -1;
+          return 0;
+        })
+      );
+    } else if (filterOption === "new") {
+      setListQuotes((prev) =>
+        [...prev].sort((a, b) => {
+          if (a.date > b.date) return 1;
+          if (a.date < b.date) return -1;
+          return 0;
+        })
+      );
+    }
+  };
+
   return (
     <div className="p-4">
       <form className="flex mb-2" onSubmit={handleSearchQuotes}>
@@ -84,6 +108,19 @@ export default function Ranking({ quotes }: ListProps) {
           입력
         </button>
       </form>
+      <select
+        className=" bg-slate-700 my-2 mr-2"
+        name="filter"
+        id="ranking-filter"
+        value={filterOption}
+        onChange={(e) => {
+          setFilterOption(e.target.value);
+          handleFilterChange();
+        }}
+      >
+        <option value="likes">추천순</option>
+        <option value="new">최신순</option>
+      </select>
       <ul>
         {listQuotes.map((quote) => (
           <div className="mb-4 relative" key={quote.id}>
@@ -139,6 +176,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         likes: quote.likes,
         voteList: quote.voteList,
         nickname: quote.nickname,
+        date: quote.date,
       })),
     },
   };
