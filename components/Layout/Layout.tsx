@@ -44,14 +44,24 @@ export const Layout = ({ children }: LayoutProps) => {
             </li>
           )}
           {user && (
-            <li>
-              <Image
-                src={user.picture || ""}
-                width={25}
-                height={25}
-                alt={user.name || "user"}
-              />
-            </li>
+            <>
+              <li>
+                <Link
+                  className="text-white hover:text-gray-300"
+                  href="/profile"
+                >
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <Image
+                  src={user.picture || ""}
+                  width={25}
+                  height={25}
+                  alt={user.name || "user"}
+                />
+              </li>
+            </>
           )}
           {user && (
             <li>
