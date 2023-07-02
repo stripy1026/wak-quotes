@@ -1,19 +1,17 @@
 import { GetServerSideProps } from "next";
 
 import clientPromise from "@/lib/mongodb";
-import { Claims, getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 
 type TmpProp = {
   nickname: string;
-  picture: string;
 };
 
-export default function Profile({ nickname, picture }: TmpProp) {
+export default function Profile({ nickname }: TmpProp) {
   return (
     <>
       <div>This is profile</div>
       <div>{nickname}</div>
-      <div>{picture}</div>
     </>
   );
 }
@@ -45,7 +43,6 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
     return {
       props: {
         nickname: userSession?.user.nickname,
-        picture: userSession?.user.picture,
       },
     };
   },
