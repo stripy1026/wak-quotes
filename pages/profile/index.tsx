@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       })
       .toArray();
 
-    if (quotes === null) {
+    if (!userSession) {
       return {
         redirect: {
           destination: "/",
@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
 
     return {
       props: {
-        nickname: userSession?.user.nickname,
+        nickname: userSession.user.nickname,
       },
     };
   },
