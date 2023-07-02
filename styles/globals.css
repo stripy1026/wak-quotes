@@ -16,6 +16,13 @@
 /* Responsive styles for 1024px */
 @media (min-width: 1024px) {
   /* Add responsive styles here */
+  .list > ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .list > ul > div {
+    margin-right: 100px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

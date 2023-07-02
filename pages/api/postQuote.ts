@@ -26,15 +26,14 @@ export default async function handler(
 
   const { message, userId } = req.body;
 
-  if (!message || message.length > 80) return res.status(422);
+  if (!message || message.length > 40) return res.status(422);
   if (!userId) return res.status(422);
 
   const likes: number = 0;
   const voteList: string[] = [];
   const nickname = user.nickname;
 
-  const dt = new Date();
-  const date = dt.toLocaleString();
+  const date = new Date();
 
   const quotes = await db
     .collection(process.env.QUOTES_COLLECTION_NAME as string)

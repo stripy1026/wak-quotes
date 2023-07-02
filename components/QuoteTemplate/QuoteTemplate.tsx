@@ -7,7 +7,7 @@ type QuoteTemplateProps = {
 
 export const QuoteTemplate = ({ width = 700, quote }: QuoteTemplateProps) => {
   const height = (width * 350) / 700;
-  const textSize = width <= 350 ? "text-xl" : "text-4xl";
+  const textSize = width <= 350 ? "text-l" : "text-3xl";
   const marginX = width <= 350 ? "mx-2" : "mx-10";
 
   return (
@@ -20,10 +20,10 @@ export const QuoteTemplate = ({ width = 700, quote }: QuoteTemplateProps) => {
       />
       <span
         className={`absolute ${marginX} top-1/3 left-1/2 text-white ${textSize} ${
-          width > 350 && "font-bold"
-        } font-serif text-center`}
+          width > 350 ? "font-gungseo" : "font-serif"
+        } text-center`}
       >
-        {quote}
+        {quote && `"${quote}"`}
       </span>
     </div>
   );

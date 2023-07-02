@@ -1,30 +1,20 @@
 import { GetServerSideProps } from "next";
 
+import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 
 import { QuoteTemplate } from "@/components/QuoteTemplate";
-import { ObjectId } from "mongodb";
 
-type ListIdProps = {
-  message: string;
-  likes: number;
-  nickname: string;
-  date: string;
-};
+import { Quotes } from "@/types/Quotes";
 
-export default function ListId({
-  message,
-  likes,
-  nickname,
-  date,
-}: ListIdProps) {
+export default function ListId({ message, likes, nickname, date }: Quotes) {
   return (
     <>
       <h3>This is ListId page</h3>
       <QuoteTemplate quote={message} />
-      <p>likes : {likes}</p>
+      <p>좋아요 : {likes}</p>
       <p>작성자 : {nickname}</p>
-      <p>작성일 : {date}</p>
+      <p>작성일 : {date.toLocaleString()}</p>
     </>
   );
 }
@@ -49,10 +39,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   return {
     props: {
+      id: quote._id.toString(),
       message: quote.message,
       likes: quote.likes,
+      voteList: quote.voteList,
       nickname: quote.nickname,
-      date: quote.date,
+      date: JSON.parse(JSON.stringify(quote.date)),
     },
   };
 };

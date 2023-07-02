@@ -1,36 +1,87 @@
 import { GetServerSideProps } from "next";
+import Link from "next/link";
+
+import { FormEvent, useEffect, useState } from "react";
 
 import clientPromise from "@/lib/mongodb";
-import { QuoteTemplate } from "@/components/QuoteTemplate";
-import Link from "next/link";
-import { useRouter } from "next/router";
-
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { FormEvent, useState } from "react";
+
+import { QuoteTemplate } from "@/components/QuoteTemplate";
+
+import { Quotes } from "@/types/Quotes";
+
+const QUOTES_PER_PAGE = 6;
 
 type ListProps = {
-  quotes: {
-    id: string;
-    message: string;
-    likes: number;
-    voteList: string[];
-    nickname: string;
-    date: string;
-  }[];
+  quotes: Quotes[];
 };
 
 export default function Ranking({ quotes }: ListProps) {
-  const router = useRouter();
   const { user, error, isLoading } = useUser();
-
   const [listQuotes, setListQuotes] = useState(quotes);
   const [message, setMessage] = useState("");
   const [searchOption, setSearchOption] = useState("quote");
-
   const [filterOption, setFilterOption] = useState("likes");
+  const [pageIndex, setPageIndex] = useState(0);
+  const [listIndex, setListIndex] = useState(1);
+
+  const partialQuotes = listQuotes.filter((_, index) => {
+    return (
+      pageIndex * QUOTES_PER_PAGE <= index &&
+      index < QUOTES_PER_PAGE + pageIndex * QUOTES_PER_PAGE
+    );
+  });
+  const totalPage = Math.ceil(listQuotes.length / QUOTES_PER_PAGE);
+  const pageListNumber = Array.from(
+    {
+      length: Math.min(totalPage - (listIndex - 1) * 5, 5),
+    },
+    (_, i) => i + 1 + (listIndex - 1) * 5
+  );
+
+  useEffect(() => {
+    // handleFilterChange()
+    if (filterOption === "likes") {
+      setListQuotes((prev) =>
+        [...prev].sort((a, b) => {
+          if (a.likes > b.likes) return -1;
+          if (a.likes < b.likes) return 1;
+          return 0;
+        })
+      );
+    } else if (filterOption === "new") {
+      setListQuotes((prev) =>
+        [...prev].sort((a, b) => {
+          if (a.date > b.date) return -1;
+          if (a.date < b.date) return 1;
+          return 0;
+        })
+      );
+    }
+  }, [filterOption]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
+
+  const handleFilterChange = () => {
+    if (filterOption === "likes") {
+      setListQuotes((prev) =>
+        [...prev].sort((a, b) => {
+          if (a.likes > b.likes) return -1;
+          if (a.likes < b.likes) return 1;
+          return 0;
+        })
+      );
+    } else if (filterOption === "new") {
+      setListQuotes((prev) =>
+        [...prev].sort((a, b) => {
+          if (a.date > b.date) return -1;
+          if (a.date < b.date) return 1;
+          return 0;
+        })
+      );
+    }
+  };
 
   const handleSearchQuotes = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,6 +91,9 @@ export default function Ranking({ quotes }: ListProps) {
     } else if (searchOption === "nick") {
       setListQuotes(quotes.filter((quote) => quote.nickname.includes(message)));
     }
+    handleFilterChange();
+    setListIndex(1);
+    setPageIndex(0);
   };
 
   const handlePostLikesQuote = async (quoteId: string) => {
@@ -53,31 +107,22 @@ export default function Ranking({ quotes }: ListProps) {
       });
       const { success } = await response.json();
       if (success === true) {
-        router.replace(router.asPath);
+        setListQuotes((prevQuotes) => {
+          const updatedQuotes = prevQuotes.map((quote) => {
+            if (quote.id === quoteId) {
+              return {
+                ...quote,
+                likes: quote.likes + 1,
+                voteList: [...quote.voteList, user?.sub as string],
+              };
+            }
+            return quote;
+          });
+          return updatedQuotes;
+        });
       }
     } catch (e) {
       console.log(e);
-    }
-  };
-
-  const handleFilterChange = () => {
-    console.log(filterOption);
-    if (filterOption === "likes") {
-      setListQuotes((prev) =>
-        [...prev].sort((a, b) => {
-          if (a.likes > b.likes) return 1;
-          if (a.likes < b.likes) return -1;
-          return 0;
-        })
-      );
-    } else if (filterOption === "new") {
-      setListQuotes((prev) =>
-        [...prev].sort((a, b) => {
-          if (a.date > b.date) return 1;
-          if (a.date < b.date) return -1;
-          return 0;
-        })
-      );
     }
   };
 
@@ -115,36 +160,72 @@ export default function Ranking({ quotes }: ListProps) {
         value={filterOption}
         onChange={(e) => {
           setFilterOption(e.target.value);
-          handleFilterChange();
         }}
       >
         <option value="likes">추천순</option>
         <option value="new">최신순</option>
       </select>
-      <ul>
-        {listQuotes.map((quote) => (
-          <div className="mb-4 relative" key={quote.id}>
-            <Link href={`/list/${quote.id}`}>
-              <QuoteTemplate width={350} quote={quote.message} />
-            </Link>
-            {user && (
-              <button
-                className={`absolute top-2/3 -right-20  ${
-                  quote.voteList.includes(user.sub as string)
-                    ? ` bg-blue-700/20 text-white/20`
-                    : `bg-blue-700 text-white`
-                }  ml-2 px-4 py-2 rounded `}
-                disabled={quote.voteList.includes(user.sub as string)}
-                onClick={() => handlePostLikesQuote(quote.id)}
-              >
-                like
-              </button>
-            )}
-            <p>좋아요: {quote.likes}</p>
-            <p>작성자: {quote.nickname}</p>
-          </div>
+      <div className="list">
+        <ul className="mr-20">
+          {partialQuotes.map((quote) => (
+            <div className="mb-4 relative" key={quote.id}>
+              <Link href={`/list/${quote.id}`}>
+                <QuoteTemplate width={350} quote={quote.message} />
+              </Link>
+              {user && (
+                <button
+                  className={`absolute top-2/3  ${
+                    quote.voteList.includes(user.sub as string)
+                      ? ` bg-blue-700/20 text-white/20`
+                      : `bg-blue-700 text-white`
+                  } ml-2 px-4 py-2 rounded w-16`}
+                  disabled={quote.voteList.includes(user.sub as string)}
+                  onClick={() => handlePostLikesQuote(quote.id)}
+                >
+                  킹아
+                </button>
+              )}
+              <p>좋아요: {quote.likes}</p>
+              <p>작성자: {quote.nickname}</p>
+            </div>
+          ))}
+        </ul>
+      </div>
+      <div className="text-center bg-blue-900/40">
+        <button
+          className="mx-2"
+          onClick={() =>
+            setListIndex((prev) => {
+              if (prev > 1) return --prev;
+              return prev;
+            })
+          }
+        >
+          {"<"}
+        </button>
+        {pageListNumber.map((num) => (
+          <button
+            className={`px-1 mx-4 my-2 ${
+              pageIndex === num - 1 && "text-zinc-600"
+            }`}
+            onClick={() => setPageIndex(num - 1)}
+            key={num}
+          >
+            {num}
+          </button>
         ))}
-      </ul>
+        <button
+          className="mx-2"
+          onClick={() =>
+            setListIndex((prev) => {
+              if (prev * 5 < totalPage) return ++prev;
+              return prev;
+            })
+          }
+        >
+          {">"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -176,7 +257,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         likes: quote.likes,
         voteList: quote.voteList,
         nickname: quote.nickname,
-        date: quote.date,
+        date: JSON.parse(JSON.stringify(quote.date)),
       })),
     },
   };

@@ -1,18 +1,16 @@
 import { GetServerSideProps } from "next";
-
-import clientPromise from "@/lib/mongodb";
-import { QuoteTemplate } from "@/components/QuoteTemplate";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
+import clientPromise from "@/lib/mongodb";
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 
+import { QuoteTemplate } from "@/components/QuoteTemplate";
+
+import { Quotes } from "@/types/Quotes";
+
 type ListProps = {
-  quotes: {
-    id: string;
-    message: string;
-    likes: number;
-  }[];
+  quotes: Quotes[];
 };
 
 export default function List({ quotes }: ListProps) {
@@ -37,8 +35,8 @@ export default function List({ quotes }: ListProps) {
   };
 
   return (
-    <div className="p-4">
-      <ul>
+    <div className="list p-4">
+      <ul className="mr-20">
         {quotes.map((quote) => (
           <div className="mb-4 relative" key={quote.id}>
             <Link href={`/list/${quote.id}`}>
@@ -50,7 +48,7 @@ export default function List({ quotes }: ListProps) {
             >
               삭제
             </button>
-            <p>likes: {quote.likes}</p>
+            <p>좋아요: {quote.likes}</p>
           </div>
         ))}
       </ul>
@@ -86,6 +84,9 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
           id: quote._id.toString(),
           message: quote.message,
           likes: quote.likes,
+          voteList: quote.voteList,
+          nickname: quote.nickname,
+          date: JSON.parse(JSON.stringify(quote.date)),
         })),
       },
     };

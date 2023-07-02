@@ -33,7 +33,6 @@ export default function Home() {
         body: JSON.stringify({ message, userId: user.sub }),
       });
       const { quoteId, err } = await response.json();
-      console.log(err);
       if (err === "Maximum 10 quotes.") return setMaxQuotes(true);
       if (quoteId) router.push(`/list/${quoteId}`);
     } catch (e) {
@@ -43,7 +42,9 @@ export default function Home() {
 
   return (
     <>
-      <h1 className="text-5xl my-2 font-bold text-center">WAK QUOTES</h1>
+      <h1 className="text-5xl my-4 font-bold text-center">
+        우왁굳 명언 만들기
+      </h1>
       <QuoteTemplate quote={quote} />
       <form onSubmit={handleaddQuoteMessage}>
         <label className="block mt-4">
@@ -53,8 +54,8 @@ export default function Home() {
           className="bg-slate-700 block w-full p-2 mt-2 rounded"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          maxLength={80}
-          placeholder="80자 이내로 입력하세요"
+          maxLength={40}
+          placeholder="40자 이내로 입력하세요"
         />
         <button
           type="submit"
