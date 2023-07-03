@@ -5,13 +5,14 @@ import { FormEvent, useState } from "react";
 import clientPromise from "@/lib/mongodb";
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { QuoteTemplate } from "@/components/QuoteTemplate";
+import { User } from "@/types/User";
 
-type ProfilePropType = {
-  userNickname: string;
-};
-
-export default function Profile({ userNickname }: ProfilePropType) {
-  const [nickname, setNickname] = useState(userNickname);
+export default function Profile({
+  nickname,
+  dateRegistered,
+  dateNicknameChanged,
+}: User) {
+  const [userNickname, setUserNickname] = useState(nickname);
   const [message, setMessage] = useState("");
   const [maxNickname, setMaxNickname] = useState(false);
 
@@ -30,7 +31,7 @@ export default function Profile({ userNickname }: ProfilePropType) {
       });
       const { nickname, err } = await response.json();
       if (err === "Maximum 16 charactors.") return setMaxNickname(true);
-      if (nickname) setNickname(nickname);
+      if (nickname) setUserNickname(nickname);
     } catch (e) {
       console.log(e);
     }
@@ -38,26 +39,31 @@ export default function Profile({ userNickname }: ProfilePropType) {
 
   return (
     <>
-      <div className="my-5 text-4xl text-center">닉네임 변경하기</div>
-      <QuoteTemplate quote={` '${nickname}' 님, 계세요?`} />
+      <div className="my-4 text-3xl text-center">닉네임 변경하기</div>
+      <QuoteTemplate quote={` '${userNickname}' 님, 계세요?`} />
       <form onSubmit={handleChangeNickname}>
+        <label className="block mt-4">
+          <strong>제 닉네임은 그게 아니라 ..</strong>
+        </label>
         <textarea
           className="bg-slate-700 block w-full p-2 mt-2 rounded"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          maxLength={20}
+          maxLength={12}
           placeholder="변경할 12자 이하의 닉네임을 입력하세요"
         />
         <button
           type="submit"
           className="px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600 float-right"
         >
-          있습니다
+          입니다
         </button>
         {maxNickname && (
-          <p className="text-red-500">12자 이상은 불가능합니다!</p>
+          <p className="text-red-500 mt-2">12자 이상은 불가능합니다!</p>
         )}
       </form>
+      <p className="mt-5">가입일 : {dateRegistered.toLocaleString()}</p>
+      <p>닉네임 변경일 : {dateNicknameChanged.toLocaleString()}</p>
     </>
   );
 }
@@ -80,6 +86,8 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       };
     }
 
+    const date = new Date();
+
     await userCollection.updateOne(
       {
         auth0Id: userSession.user.sub,
@@ -88,6 +96,8 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
         $setOnInsert: {
           auth0Id: userSession.user.sub,
           nickname: userSession.user.nickname,
+          dateRegistered: date,
+          dateNicknameChanged: date,
         },
       },
       {
@@ -109,7 +119,14 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
     }
 
     return {
-      props: { userNickname: user.nickname },
+      props: {
+        auth0Id: user.auth0Id,
+        nickname: user.nickname,
+        dateRegistered: JSON.parse(JSON.stringify(user.dateRegistered)),
+        dateNicknameChanged: JSON.parse(
+          JSON.stringify(user.dateNicknameChanged)
+        ),
+      },
     };
   },
 });
