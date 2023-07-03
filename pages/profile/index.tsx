@@ -12,9 +12,12 @@ type ProfilePropType = {
 export default function Profile({ userNickname }: ProfilePropType) {
   const [nickname, setNickname] = useState(userNickname);
   const [message, setMessage] = useState("");
+  const [maxNickname, setMaxNickname] = useState(false);
 
   const handleChangeNickname = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setMaxNickname(false);
 
     try {
       const response = await fetch(`api/postUserNickname`, {
@@ -25,7 +28,7 @@ export default function Profile({ userNickname }: ProfilePropType) {
         body: JSON.stringify({ message }),
       });
       const { nickname, err } = await response.json();
-      if (err === "Maximum 16 charactors.") return console.log(err);
+      if (err === "Maximum 16 charactors.") return setMaxNickname(true);
       if (nickname) setNickname(nickname);
     } catch (e) {
       console.log(e);
@@ -43,7 +46,7 @@ export default function Profile({ userNickname }: ProfilePropType) {
           className="bg-slate-700 block w-full p-2 mt-2 rounded"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          maxLength={16}
+          maxLength={20}
           placeholder="16자 이하"
         />
         <button
@@ -52,6 +55,9 @@ export default function Profile({ userNickname }: ProfilePropType) {
         >
           변경
         </button>
+        {maxNickname && (
+          <p className="text-red-500">16자 이상은 불가능합니다</p>
+        )}
       </form>
     </>
   );
