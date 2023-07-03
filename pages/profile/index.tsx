@@ -4,18 +4,11 @@ import { useState } from "react";
 
 import clientPromise from "@/lib/mongodb";
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
-import { UpdateResult } from "mongodb";
 
-type TmpProp = {
-  user: UpdateResult<Document>;
-};
-
-export default function Profile({ user }: TmpProp) {
+export default function Profile() {
   const [message, setMessage] = useState("");
 
   const handleChangeNickname = () => {};
-
-  console.log(user);
 
   return (
     <>
@@ -56,8 +49,6 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       };
     }
 
-    console.log(userSession.user);
-
     const user = await db
       .collection(process.env.USERS_COLLECTION_NAME as string)
       .updateOne(
@@ -76,9 +67,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       );
 
     return {
-      props: {
-        user,
-      },
+      props: {},
     };
   },
 });
