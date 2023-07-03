@@ -249,6 +249,20 @@ export const getServerSideProps: GetServerSideProps = async () => {
     };
   }
 
+  const users = await db
+    .collection(process.env.USERS_COLLECTION_NAME as string)
+    .find()
+    .toArray();
+
+  if (!users) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       quotes: quotes.map((quote) => ({
@@ -256,7 +270,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         message: quote.message,
         likes: quote.likes,
         voteList: quote.voteList,
-        nickname: quote.nickname,
+        nickname: users.find((user) => user.auth0Id === quote.userId)?.nickname,
         date: JSON.parse(JSON.stringify(quote.date)),
       })),
     },
