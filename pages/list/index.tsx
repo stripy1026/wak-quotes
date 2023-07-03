@@ -62,6 +62,15 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
 
+    if (!userSession) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+
     const quotes = await db
       .collection(process.env.QUOTES_COLLECTION_NAME as string)
       .find({
@@ -69,7 +78,22 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       })
       .toArray();
 
-    if (quotes === null) {
+    if (!quotes) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+
+    const user = await db
+      .collection(process.env.USERS_COLLECTION_NAME as string)
+      .findOne({
+        auth0Id: userSession.user.sub,
+      });
+
+    if (!user) {
       return {
         redirect: {
           destination: "/",
@@ -85,7 +109,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
           message: quote.message,
           likes: quote.likes,
           voteList: quote.voteList,
-          nickname: quote.nickname,
+          nickname: user.nickname,
           date: JSON.parse(JSON.stringify(quote.date)),
         })),
       },
