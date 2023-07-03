@@ -49,7 +49,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       };
     }
 
-    const user = await db
+    await db
       .collection(process.env.USERS_COLLECTION_NAME as string)
       .updateOne(
         {
