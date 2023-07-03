@@ -26,7 +26,7 @@ export default async function handler(
 
   const { message } = req.body;
 
-  if (!message || message.length > 17)
+  if (!message || message.length > 13)
     return res.status(422).json({ err: "Maximum 16 charactors." });
 
   await db.collection(process.env.USERS_COLLECTION_NAME as string).updateOne(

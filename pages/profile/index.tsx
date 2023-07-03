@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 
 import clientPromise from "@/lib/mongodb";
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { QuoteTemplate } from "@/components/QuoteTemplate";
 
 type ProfilePropType = {
   userNickname: string;
@@ -37,26 +38,24 @@ export default function Profile({ userNickname }: ProfilePropType) {
 
   return (
     <>
-      <div className="my-20 text-4xl">닉네임: {nickname}</div>
+      <div className="my-5 text-4xl text-center">닉네임 변경하기</div>
+      <QuoteTemplate quote={` '${nickname}' 님, 계세요?`} />
       <form onSubmit={handleChangeNickname}>
-        <label className="block mt-4">
-          <strong>닉네임 변경</strong>
-        </label>
         <textarea
           className="bg-slate-700 block w-full p-2 mt-2 rounded"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           maxLength={20}
-          placeholder="16자 이하"
+          placeholder="변경할 12자 이하의 닉네임을 입력하세요"
         />
         <button
           type="submit"
           className="px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600 float-right"
         >
-          변경
+          있습니다
         </button>
         {maxNickname && (
-          <p className="text-red-500">16자 이상은 불가능합니다</p>
+          <p className="text-red-500">12자 이상은 불가능합니다!</p>
         )}
       </form>
     </>
