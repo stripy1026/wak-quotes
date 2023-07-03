@@ -1,18 +1,40 @@
 import { GetServerSideProps } from "next";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 import clientPromise from "@/lib/mongodb";
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 
-export default function Profile() {
+type ProfilePropType = {
+  userNickname: string;
+};
+
+export default function Profile({ userNickname }: ProfilePropType) {
+  const [nickname, setNickname] = useState(userNickname);
   const [message, setMessage] = useState("");
 
-  const handleChangeNickname = () => {};
+  const handleChangeNickname = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`api/postUserNickname`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
+      const { nickname, err } = await response.json();
+      if (err === "Maximum 16 charactors.") return console.log(err);
+      if (nickname) setNickname(nickname);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <>
-      <div className="my-20 text-4xl">닉네임: {}</div>
+      <div className="my-20 text-4xl">닉네임: {nickname}</div>
       <form onSubmit={handleChangeNickname}>
         <label className="block mt-4">
           <strong>닉네임 변경</strong>
@@ -22,6 +44,7 @@ export default function Profile() {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           maxLength={16}
+          placeholder="16자 이하"
         />
         <button
           type="submit"
@@ -39,6 +62,9 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
     const userSession = await getSession(ctx.req, ctx.res);
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
+    const userCollection = db.collection(
+      process.env.USERS_COLLECTION_NAME as string
+    );
 
     if (!userSession) {
       return {
@@ -49,25 +75,36 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       };
     }
 
-    await db
-      .collection(process.env.USERS_COLLECTION_NAME as string)
-      .updateOne(
-        {
+    await userCollection.updateOne(
+      {
+        auth0Id: userSession.user.sub,
+      },
+      {
+        $setOnInsert: {
           auth0Id: userSession.user.sub,
+          nickname: userSession.user.nickname,
         },
-        {
-          $setOnInsert: {
-            auth0Id: userSession.user.sub,
-            nickname: userSession.user.nickname,
-          },
+      },
+      {
+        upsert: true,
+      }
+    );
+
+    const user = await userCollection.findOne({
+      auth0Id: userSession.user.sub,
+    });
+
+    if (!user) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
         },
-        {
-          upsert: true,
-        }
-      );
+      };
+    }
 
     return {
-      props: {},
+      props: { userNickname: user.nickname },
     };
   },
 });
