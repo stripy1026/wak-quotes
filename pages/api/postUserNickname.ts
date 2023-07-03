@@ -37,6 +37,7 @@ export default async function handler(
       $set: {
         auth0Id: userSession.user.sub,
         nickname: message,
+        dateNicknameChanged: new Date(),
       },
     },
     {
