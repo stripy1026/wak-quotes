@@ -4,19 +4,22 @@ import { useState } from "react";
 
 import clientPromise from "@/lib/mongodb";
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { UpdateResult } from "mongodb";
 
 type TmpProp = {
-  nickname: string;
+  user: UpdateResult<Document>;
 };
 
-export default function Profile({ nickname }: TmpProp) {
+export default function Profile({ user }: TmpProp) {
   const [message, setMessage] = useState("");
 
   const handleChangeNickname = () => {};
 
+  console.log(user);
+
   return (
     <>
-      <div className="my-20 text-4xl">닉네임: {nickname}</div>
+      <div className="my-20 text-4xl">닉네임: {}</div>
       <form onSubmit={handleChangeNickname}>
         <label className="block mt-4">
           <strong>닉네임 변경</strong>
@@ -44,15 +47,6 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
 
-    console.log(userSession?.user);
-
-    const quotes = await db
-      .collection(process.env.QUOTES_COLLECTION_NAME as string)
-      .find({
-        userId: userSession?.user.sub,
-      })
-      .toArray();
-
     if (!userSession) {
       return {
         redirect: {
@@ -62,9 +56,28 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       };
     }
 
+    console.log(userSession.user);
+
+    const user = await db
+      .collection(process.env.USERS_COLLECTION_NAME as string)
+      .updateOne(
+        {
+          auth0Id: userSession.user.sub,
+        },
+        {
+          $setOnInsert: {
+            auth0Id: userSession.user.sub,
+            nickname: userSession.user.nickname,
+          },
+        },
+        {
+          upsert: true,
+        }
+      );
+
     return {
       props: {
-        nickname: userSession.user.nickname,
+        user,
       },
     };
   },
