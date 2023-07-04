@@ -1,39 +1,83 @@
 import { GetServerSideProps } from "next";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 import clientPromise from "@/lib/mongodb";
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { QuoteTemplate } from "@/components/QuoteTemplate";
+import { User } from "@/types/User";
 
-type TmpProp = {
-  nickname: string;
-};
-
-export default function Profile({ nickname }: TmpProp) {
+export default function Profile({
+  nickname,
+  dateRegistered,
+  dateNicknameChanged,
+}: User) {
+  const [userNickname, setUserNickname] = useState(nickname);
   const [message, setMessage] = useState("");
+  const [maxNickname, setMaxNickname] = useState(false);
+  const [timeLimit, setTimeLimit] = useState(false);
 
-  const handleChangeNickname = () => {};
+  const handleChangeNickname = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setMaxNickname(false);
+    setTimeLimit(false);
+
+    try {
+      const response = await fetch(`api/postUserNickname`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ message, dateNicknameChanged }),
+      });
+      const { nickname, err } = await response.json();
+      if (err === "Maximum 16 charactors.") return setMaxNickname(true);
+      if (err === "Update limit exceeded. Try again tomorrow.")
+        return setTimeLimit(true);
+      if (nickname) setUserNickname(nickname);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <>
-      <div className="my-20 text-4xl">닉네임: {nickname}</div>
+      <div className="my-4 text-3xl text-center">닉네임 변경하기</div>
+      <QuoteTemplate quote={` '${userNickname}' 님, 계세요?`} />
       <form onSubmit={handleChangeNickname}>
         <label className="block mt-4">
-          <strong>닉네임 변경</strong>
+          <strong>저는 {userNickname} (이)가 아니라 ..</strong>
         </label>
         <textarea
           className="bg-slate-700 block w-full p-2 mt-2 rounded"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          maxLength={16}
+          maxLength={12}
+          placeholder="변경할 12자 이하의 닉네임을 입력하세요"
         />
         <button
           type="submit"
           className="px-4 py-2 mt-4 bg-blue-500 text-white rounded hover:bg-blue-600 float-right"
         >
-          변경
+          입니다
         </button>
+        {maxNickname && (
+          <p className="text-red-500 mt-2">12자 이상은 불가능합니다!</p>
+        )}
+        {timeLimit && (
+          <p className="text-red-500 mt-2">
+            닉네임 변경은 하루에 한 번만 가능합니다!
+          </p>
+        )}
       </form>
+      <p className="mt-5">
+        가입일 : {new Date(dateRegistered).toLocaleString()}
+      </p>
+      {new Date(1995, 9, 26).toLocaleString() !==
+        new Date(dateNicknameChanged).toLocaleString() && (
+        <p>닉네임 변경일 : {new Date(dateNicknameChanged).toLocaleString()}</p>
+      )}
     </>
   );
 }
@@ -43,15 +87,9 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
     const userSession = await getSession(ctx.req, ctx.res);
     const client = await clientPromise;
     const db = client.db(process.env.DB_NAME);
-
-    console.log(userSession?.user);
-
-    const quotes = await db
-      .collection(process.env.QUOTES_COLLECTION_NAME as string)
-      .find({
-        userId: userSession?.user.sub,
-      })
-      .toArray();
+    const userCollection = db.collection(
+      process.env.USERS_COLLECTION_NAME as string
+    );
 
     if (!userSession) {
       return {
@@ -62,9 +100,46 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
       };
     }
 
+    const date = new Date();
+
+    await userCollection.updateOne(
+      {
+        auth0Id: userSession.user.sub,
+      },
+      {
+        $setOnInsert: {
+          auth0Id: userSession.user.sub,
+          nickname: userSession.user.nickname,
+          dateRegistered: new Date(),
+          dateNicknameChanged: new Date(1995, 9, 26),
+        },
+      },
+      {
+        upsert: true,
+      }
+    );
+
+    const user = await userCollection.findOne({
+      auth0Id: userSession.user.sub,
+    });
+
+    if (!user) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+
     return {
       props: {
-        nickname: userSession.user.nickname,
+        auth0Id: user.auth0Id,
+        nickname: user.nickname,
+        dateRegistered: JSON.parse(JSON.stringify(user.dateRegistered)),
+        dateNicknameChanged: JSON.parse(
+          JSON.stringify(user.dateNicknameChanged)
+        ),
       },
     };
   },

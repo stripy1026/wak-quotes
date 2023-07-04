@@ -14,7 +14,7 @@ export default function ListId({ message, likes, nickname, date }: Quotes) {
       <QuoteTemplate quote={message} />
       <p>좋아요 : {likes}</p>
       <p>작성자 : {nickname}</p>
-      <p>작성일 : {date.toLocaleString()}</p>
+      <p>작성일 : {new Date(date).toLocaleString()}</p>
     </>
   );
 }
@@ -36,6 +36,20 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       },
     };
   }
+  const user = await db
+    .collection(process.env.USERS_COLLECTION_NAME as string)
+    .findOne({
+      auth0Id: quote.userId,
+    });
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
   return {
     props: {
@@ -43,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       message: quote.message,
       likes: quote.likes,
       voteList: quote.voteList,
-      nickname: quote.nickname,
+      nickname: user.nickname,
       date: JSON.parse(JSON.stringify(quote.date)),
     },
   };
