@@ -7,6 +7,7 @@ type QuoteTemplateProps = {
 
 export const QuoteTemplate = ({ width = 700, quote }: QuoteTemplateProps) => {
   const height = (width * 350) / 700;
+  if (window.outerWidth < 710) width = 350;
   const textSize = width <= 350 ? "text-l" : "text-3xl";
   const marginX = width <= 350 ? "mx-2" : "mx-10";
 

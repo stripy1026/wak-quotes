@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <>
-      <h1 className="text-5xl my-4 font-bold text-center">
+      <h1 className="text-4xl my-4 font-bold text-center">
         우왁굳 명언 만들기
       </h1>
       <QuoteTemplate quote={quote} />
