@@ -14,7 +14,7 @@ export default function ListId({ message, likes, nickname, date }: Quotes) {
       <QuoteTemplate quote={message} />
       <p>좋아요 : {likes}</p>
       <p>작성자 : {nickname}</p>
-      <p>작성일 : {date.toLocaleString()}</p>
+      <p>작성일 : {new Date(date).toLocaleString()}</p>
     </>
   );
 }

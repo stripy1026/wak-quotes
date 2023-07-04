@@ -62,8 +62,10 @@ export default function Profile({
           <p className="text-red-500 mt-2">12자 이상은 불가능합니다!</p>
         )}
       </form>
-      <p className="mt-5">가입일 : {dateRegistered.toLocaleString()}</p>
-      <p>닉네임 변경일 : {dateNicknameChanged.toLocaleString()}</p>
+      <p className="mt-5">
+        가입일 : {new Date(dateRegistered).toLocaleString()}
+      </p>
+      <p>닉네임 변경일 : {new Date(dateNicknameChanged).toLocaleString()}</p>
     </>
   );
 }
