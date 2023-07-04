@@ -1,7 +1,5 @@
 import clientPromise from "@/lib/mongodb";
-
 import type { NextApiRequest, NextApiResponse } from "next";
-
 import { getSession } from "@auth0/nextjs-auth0";
 
 type Data = {
@@ -27,17 +25,37 @@ export default async function handler(
   const { message } = req.body;
 
   if (!message || message.length > 13)
-    return res.status(422).json({ err: "Maximum 16 charactors." });
+    return res.status(422).json({ err: "Maximum 16 characters." });
 
-  await db.collection(process.env.USERS_COLLECTION_NAME as string).updateOne(
-    {
-      auth0Id: userSession.user.sub,
-    },
+  const userCollection = db.collection(
+    process.env.USERS_COLLECTION_NAME as string
+  );
+
+  const currentDate = new Date();
+  const previousUpdate = await userCollection.findOne({
+    auth0Id: userSession.user.sub,
+  });
+
+  if (previousUpdate && previousUpdate.dateNicknameChanged) {
+    const lastUpdateDate = previousUpdate.dateNicknameChanged;
+    const timeSinceLastUpdate =
+      currentDate.getTime() - lastUpdateDate.getTime();
+    const oneDayInMillis = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+    if (timeSinceLastUpdate < oneDayInMillis) {
+      return res
+        .status(429)
+        .json({ err: "Update limit exceeded. Try again tomorrow." });
+    }
+  }
+
+  await userCollection.updateOne(
+    { auth0Id: userSession.user.sub },
     {
       $set: {
         auth0Id: userSession.user.sub,
         nickname: message,
-        dateNicknameChanged: new Date(),
+        dateNicknameChanged: currentDate,
       },
     },
     {

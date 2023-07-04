@@ -15,11 +15,13 @@ export default function Profile({
   const [userNickname, setUserNickname] = useState(nickname);
   const [message, setMessage] = useState("");
   const [maxNickname, setMaxNickname] = useState(false);
+  const [timeLimit, setTimeLimit] = useState(false);
 
   const handleChangeNickname = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setMaxNickname(false);
+    setTimeLimit(false);
 
     try {
       const response = await fetch(`api/postUserNickname`, {
@@ -27,10 +29,12 @@ export default function Profile({
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, dateNicknameChanged }),
       });
       const { nickname, err } = await response.json();
       if (err === "Maximum 16 charactors.") return setMaxNickname(true);
+      if (err === "Update limit exceeded. Try again tomorrow.")
+        return setTimeLimit(true);
       if (nickname) setUserNickname(nickname);
     } catch (e) {
       console.log(e);
@@ -61,11 +65,19 @@ export default function Profile({
         {maxNickname && (
           <p className="text-red-500 mt-2">12자 이상은 불가능합니다!</p>
         )}
+        {timeLimit && (
+          <p className="text-red-500 mt-2">
+            닉네임 변경은 하루에 한 번만 가능합니다!
+          </p>
+        )}
       </form>
       <p className="mt-5">
         가입일 : {new Date(dateRegistered).toLocaleString()}
       </p>
-      <p>닉네임 변경일 : {new Date(dateNicknameChanged).toLocaleString()}</p>
+      {new Date(1995, 9, 26).toLocaleString() !==
+        new Date(dateNicknameChanged).toLocaleString() && (
+        <p>닉네임 변경일 : {new Date(dateNicknameChanged).toLocaleString()}</p>
+      )}
     </>
   );
 }
@@ -98,8 +110,8 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
         $setOnInsert: {
           auth0Id: userSession.user.sub,
           nickname: userSession.user.nickname,
-          dateRegistered: date,
-          dateNicknameChanged: date,
+          dateRegistered: new Date(),
+          dateNicknameChanged: new Date(1995, 9, 26),
         },
       },
       {
