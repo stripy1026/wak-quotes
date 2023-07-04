@@ -43,7 +43,7 @@ export default function Profile({
       <QuoteTemplate quote={` '${userNickname}' 님, 계세요?`} />
       <form onSubmit={handleChangeNickname}>
         <label className="block mt-4">
-          <strong>제 닉네임은 그게 아니라 ..</strong>
+          <strong>저는 {userNickname} (이)가 아니라 ..</strong>
         </label>
         <textarea
           className="bg-slate-700 block w-full p-2 mt-2 rounded"
