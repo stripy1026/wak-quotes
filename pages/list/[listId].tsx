@@ -28,7 +28,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     .collection(process.env.QUOTES_COLLECTION_NAME as string)
     .findOne({ _id: new ObjectId(listId) });
 
-  if (quote === null) {
+  if (!quote) {
     return {
       redirect: {
         destination: "/",
