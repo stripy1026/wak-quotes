@@ -6,6 +6,7 @@ import clientPromise from "@/lib/mongodb";
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { QuoteTemplate } from "@/components/QuoteTemplate";
 import { User } from "@/types/User";
+import Error from "next/error";
 
 export default function Profile({
   nickname,
@@ -32,12 +33,16 @@ export default function Profile({
         body: JSON.stringify({ message, dateNicknameChanged }),
       });
       const { nickname, err } = await response.json();
+
       if (err === "Maximum 16 charactors.") return setMaxNickname(true);
       if (err === "Update limit exceeded. Try again tomorrow.")
         return setTimeLimit(true);
+      const errorCode = response.ok ? 0 : response.status;
+      if (errorCode) return <Error statusCode={errorCode} />;
+
       if (nickname) setUserNickname(nickname);
     } catch (e) {
-      console.log(e);
+      return <Error statusCode={404} />;
     }
   };
 
@@ -99,8 +104,6 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
         },
       };
     }
-
-    const date = new Date();
 
     await userCollection.updateOne(
       {

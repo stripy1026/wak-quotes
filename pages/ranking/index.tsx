@@ -9,6 +9,7 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import { QuoteTemplate } from "@/components/QuoteTemplate";
 
 import { Quotes } from "@/types/Quotes";
+import Error from "next/error";
 
 const QUOTES_PER_PAGE = 6;
 
@@ -122,7 +123,7 @@ export default function Ranking({ quotes }: ListProps) {
         });
       }
     } catch (e) {
-      console.log(e);
+      return <Error statusCode={404} />;
     }
   };
 
