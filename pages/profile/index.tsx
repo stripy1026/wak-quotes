@@ -49,8 +49,8 @@ export default function Profile({
     }
   };
 
-  console.log(new Date(1995, 9, 26, 0, 0, 0, 0).toLocaleString());
-  console.log(new Date(dateNicknameChanged).toLocaleString());
+  console.log(new Date(1995, 9, 26, 0, 0, 0, 0));
+  console.log(new Date(dateNicknameChanged));
 
   return (
     <>
