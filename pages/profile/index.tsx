@@ -49,13 +49,6 @@ export default function Profile({
     }
   };
 
-  console.log(new Date(0));
-  console.log(new Date(dateNicknameChanged));
-  console.log(dateNicknameChanged);
-  console.log("local");
-  console.log(new Date(0).toLocaleString());
-  console.log(new Date(dateNicknameChanged).toLocaleString());
-
   return (
     <>
       <div className="my-4 text-3xl text-center">닉네임 변경하기</div>
