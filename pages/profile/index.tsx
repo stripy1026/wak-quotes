@@ -49,6 +49,9 @@ export default function Profile({
     }
   };
 
+  console.log(new Date(1995, 9, 26, 0, 0, 0, 0).toLocaleString());
+  console.log(new Date(dateNicknameChanged).toLocaleString());
+
   return (
     <>
       <div className="my-4 text-3xl text-center">닉네임 변경하기</div>
