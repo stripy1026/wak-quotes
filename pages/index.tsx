@@ -4,6 +4,7 @@ import { QuoteTemplate } from "@/components/QuoteTemplate";
 import { useRouter } from "next/router";
 
 import { useUser } from "@auth0/nextjs-auth0/client";
+import Error from "next/error";
 
 export default function Home() {
   const [message, setMessage] = useState("");
@@ -33,10 +34,14 @@ export default function Home() {
         body: JSON.stringify({ message, userId: user.sub }),
       });
       const { quoteId, err } = await response.json();
+
       if (err === "Maximum 10 quotes.") return setMaxQuotes(true);
+      const errorCode = response.ok ? 0 : response.status;
+      if (errorCode) return <Error statusCode={errorCode} />;
+
       if (quoteId) router.push(`/list/${quoteId}`);
     } catch (e) {
-      console.log(e);
+      return <Error statusCode={404} />;
     }
   };
 
