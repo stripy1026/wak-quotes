@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 
 import { useUser } from "@auth0/nextjs-auth0/client";
 import Error from "next/error";
+import Head from "next/head";
 
 export default function Home() {
   const [message, setMessage] = useState("");
@@ -45,6 +46,13 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>우왁굳 명언 만들기</title>
+        <meta
+          name="description"
+          content="당신이 원하는 우왁굳 명언을 만들어 보세요"
+        />
+      </Head>
       <h1 className="text-4xl my-4 font-bold text-center">
         우왁굳 명언 만들기
       </h1>
