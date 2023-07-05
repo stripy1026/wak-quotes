@@ -49,10 +49,11 @@ export default function Profile({
     }
   };
 
-  console.log(new Date(1995, 9, 26, 0, 0, 0, 0));
+  console.log(new Date(0));
   console.log(new Date(dateNicknameChanged));
+  console.log(dateNicknameChanged);
   console.log("local");
-  console.log(new Date(1995, 9, 26, 0, 0, 0, 0).toLocaleString());
+  console.log(new Date(0).toLocaleString());
   console.log(new Date(dateNicknameChanged).toLocaleString());
 
   return (
@@ -88,7 +89,7 @@ export default function Profile({
       <p className="mt-5">
         가입일 : {new Date(dateRegistered).toLocaleString()}
       </p>
-      {new Date(1995, 9, 26, 0, 0, 0, 0).toLocaleString() !==
+      {new Date(0).toLocaleString() !==
         new Date(dateNicknameChanged).toLocaleString() && (
         <p>닉네임 변경일 : {new Date(dateNicknameChanged).toLocaleString()}</p>
       )}
@@ -123,7 +124,7 @@ export const getServerSideProps: GetServerSideProps = withPageAuthRequired({
           auth0Id: userSession.user.sub,
           nickname: userSession.user.nickname,
           dateRegistered: new Date(),
-          dateNicknameChanged: new Date(1995, 9, 26, 0, 0, 0, 0),
+          dateNicknameChanged: new Date(0),
         },
       },
       {
