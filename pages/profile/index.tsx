@@ -40,7 +40,10 @@ export default function Profile({
       const errorCode = response.ok ? 0 : response.status;
       if (errorCode) return <Error statusCode={errorCode} />;
 
-      if (nickname) setUserNickname(nickname);
+      if (nickname) {
+        setUserNickname(nickname);
+        setMessage("");
+      }
     } catch (e) {
       return <Error statusCode={404} />;
     }

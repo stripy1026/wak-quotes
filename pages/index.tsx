@@ -22,6 +22,7 @@ export default function Home() {
     e.preventDefault();
 
     setQuote(message);
+    setMessage("");
 
     if (!user) return;
 
