@@ -12,10 +12,12 @@ export default function ListId({ message, likes, nickname, date }: Quotes) {
   return (
     <>
       <Seo title="Quote" metaContent={message} />
-      <QuoteTemplate quote={message} />
-      <p>좋아요 : {likes}</p>
-      <p>작성자 : {nickname}</p>
-      <p>작성일 : {new Date(date).toLocaleString()}</p>
+      <div className="my-4">
+        <QuoteTemplate quote={message} />
+        <p>좋아요 : {likes}</p>
+        <p>작성자 : {nickname}</p>
+        <p>작성일 : {new Date(date).toLocaleString()}</p>
+      </div>
     </>
   );
 }
