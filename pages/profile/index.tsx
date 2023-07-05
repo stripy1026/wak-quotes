@@ -7,6 +7,7 @@ import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { QuoteTemplate } from "@/components/QuoteTemplate";
 import { User } from "@/types/User";
 import Error from "next/error";
+import { Seo } from "@/components/Seo";
 
 export default function Profile({
   nickname,
@@ -51,6 +52,7 @@ export default function Profile({
 
   return (
     <>
+      <Seo title="Profile" metaContent="프로필 수정 페이지" />
       <div className="my-4 text-3xl text-center">닉네임 변경하기</div>
       <QuoteTemplate quote={` '${userNickname}' 님, 계세요?`} />
       <form onSubmit={handleChangeNickname}>

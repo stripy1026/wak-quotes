@@ -6,11 +6,12 @@ import clientPromise from "@/lib/mongodb";
 import { QuoteTemplate } from "@/components/QuoteTemplate";
 
 import { Quotes } from "@/types/Quotes";
+import { Seo } from "@/components/Seo";
 
 export default function ListId({ message, likes, nickname, date }: Quotes) {
   return (
     <>
-      <h3>This is ListId page</h3>
+      <Seo title="Quote" metaContent={message} />
       <QuoteTemplate quote={message} />
       <p>좋아요 : {likes}</p>
       <p>작성자 : {nickname}</p>

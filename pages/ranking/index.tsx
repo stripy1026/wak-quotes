@@ -10,6 +10,7 @@ import { QuoteTemplate } from "@/components/QuoteTemplate";
 
 import { Quotes } from "@/types/Quotes";
 import Error from "next/error";
+import { Seo } from "@/components/Seo";
 
 const QUOTES_PER_PAGE = 6;
 
@@ -128,106 +129,109 @@ export default function Ranking({ quotes }: ListProps) {
   };
 
   return (
-    <div className="p-4">
-      <form className="flex mb-2" onSubmit={handleSearchQuotes}>
-        <textarea
-          className="flex-1 bg-slate-700 w-full h-10 mx-2 mt-2 p-2 rounded"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          maxLength={80}
-          placeholder="80자 이내 검색"
-        />
-        <select
-          className="flex-none bg-slate-700 mt-2 mr-2"
-          name="search"
-          id="ranking-search"
-          value={searchOption}
-          onChange={(e) => setSearchOption(e.target.value)}
-        >
-          <option value="quote">명언</option>
-          <option value="nick">작성자</option>
-        </select>
-        <button
-          type="submit"
-          className="flex-none px-4 py-2 mt-2 bg-blue-500 text-white rounded hover:bg-blue-600 float-right"
-        >
-          입력
-        </button>
-      </form>
-      <select
-        className=" bg-slate-700 my-2 mr-2"
-        name="filter"
-        id="ranking-filter"
-        value={filterOption}
-        onChange={(e) => {
-          setFilterOption(e.target.value);
-        }}
-      >
-        <option value="likes">추천순</option>
-        <option value="new">최신순</option>
-      </select>
-      <div className="list">
-        <ul className="mr-20">
-          {partialQuotes.map((quote) => (
-            <div className="mb-4 relative" key={quote.id}>
-              <Link href={`/list/${quote.id}`}>
-                <QuoteTemplate width={350} quote={quote.message} />
-              </Link>
-              {user && (
-                <button
-                  className={`absolute top-2/3  ${
-                    quote.voteList.includes(user.sub as string)
-                      ? ` bg-blue-700/20 text-white/20`
-                      : `bg-blue-700 text-white`
-                  } ml-2 px-4 py-2 rounded w-16`}
-                  disabled={quote.voteList.includes(user.sub as string)}
-                  onClick={() => handlePostLikesQuote(quote.id)}
-                >
-                  킹아
-                </button>
-              )}
-              <p>좋아요: {quote.likes}</p>
-              <p>작성자: {quote.nickname}</p>
-            </div>
-          ))}
-        </ul>
-      </div>
-      <div className="text-center bg-blue-900/40">
-        <button
-          className="mx-2"
-          onClick={() =>
-            setListIndex((prev) => {
-              if (prev > 1) return --prev;
-              return prev;
-            })
-          }
-        >
-          {"<"}
-        </button>
-        {pageListNumber.map((num) => (
-          <button
-            className={`px-1 mx-4 my-2 ${
-              pageIndex === num - 1 && "text-zinc-600"
-            }`}
-            onClick={() => setPageIndex(num - 1)}
-            key={num}
+    <>
+      <Seo title="Ranking" metaContent="우왁굳 명언 랭킹" />
+      <div className="p-4">
+        <form className="flex mb-2" onSubmit={handleSearchQuotes}>
+          <textarea
+            className="flex-1 bg-slate-700 w-full h-10 mx-2 mt-2 p-2 rounded"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            maxLength={80}
+            placeholder="80자 이내 검색"
+          />
+          <select
+            className="flex-none bg-slate-700 mt-2 mr-2"
+            name="search"
+            id="ranking-search"
+            value={searchOption}
+            onChange={(e) => setSearchOption(e.target.value)}
           >
-            {num}
+            <option value="quote">명언</option>
+            <option value="nick">작성자</option>
+          </select>
+          <button
+            type="submit"
+            className="flex-none px-4 py-2 mt-2 bg-blue-500 text-white rounded hover:bg-blue-600 float-right"
+          >
+            입력
           </button>
-        ))}
-        <button
-          className="mx-2"
-          onClick={() =>
-            setListIndex((prev) => {
-              if (prev * 5 < totalPage) return ++prev;
-              return prev;
-            })
-          }
+        </form>
+        <select
+          className=" bg-slate-700 my-2 mr-2"
+          name="filter"
+          id="ranking-filter"
+          value={filterOption}
+          onChange={(e) => {
+            setFilterOption(e.target.value);
+          }}
         >
-          {">"}
-        </button>
+          <option value="likes">추천순</option>
+          <option value="new">최신순</option>
+        </select>
+        <div className="list">
+          <ul className="mr-20">
+            {partialQuotes.map((quote) => (
+              <div className="mb-4 relative" key={quote.id}>
+                <Link href={`/list/${quote.id}`}>
+                  <QuoteTemplate width={350} quote={quote.message} />
+                </Link>
+                {user && (
+                  <button
+                    className={`absolute top-2/3  ${
+                      quote.voteList.includes(user.sub as string)
+                        ? ` bg-blue-700/20 text-white/20`
+                        : `bg-blue-700 text-white`
+                    } ml-2 px-4 py-2 rounded w-16`}
+                    disabled={quote.voteList.includes(user.sub as string)}
+                    onClick={() => handlePostLikesQuote(quote.id)}
+                  >
+                    킹아
+                  </button>
+                )}
+                <p>좋아요: {quote.likes}</p>
+                <p>작성자: {quote.nickname}</p>
+              </div>
+            ))}
+          </ul>
+        </div>
+        <div className="text-center bg-blue-900/40">
+          <button
+            className="mx-2"
+            onClick={() =>
+              setListIndex((prev) => {
+                if (prev > 1) return --prev;
+                return prev;
+              })
+            }
+          >
+            {"<"}
+          </button>
+          {pageListNumber.map((num) => (
+            <button
+              className={`px-1 mx-4 my-2 ${
+                pageIndex === num - 1 && "text-zinc-600"
+              }`}
+              onClick={() => setPageIndex(num - 1)}
+              key={num}
+            >
+              {num}
+            </button>
+          ))}
+          <button
+            className="mx-2"
+            onClick={() =>
+              setListIndex((prev) => {
+                if (prev * 5 < totalPage) return ++prev;
+                return prev;
+              })
+            }
+          >
+            {">"}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -8,6 +8,7 @@ import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { QuoteTemplate } from "@/components/QuoteTemplate";
 
 import { Quotes } from "@/types/Quotes";
+import { Seo } from "@/components/Seo";
 
 type ListProps = {
   quotes: Quotes[];
@@ -35,24 +36,27 @@ export default function List({ quotes }: ListProps) {
   };
 
   return (
-    <div className="list p-4">
-      <ul className="mr-20">
-        {quotes.map((quote) => (
-          <div className="mb-4 relative" key={quote.id}>
-            <Link href={`/list/${quote.id}`}>
-              <QuoteTemplate width={350} quote={quote.message} />
-            </Link>
-            <button
-              className="absolute top-2/3 -right-20 bg-red-700 text-white ml-2 px-4 py-2 rounded"
-              onClick={() => handleDeleteQuote(quote.id)}
-            >
-              삭제
-            </button>
-            <p>좋아요: {quote.likes}</p>
-          </div>
-        ))}
-      </ul>
-    </div>
+    <>
+      <Seo title="List" metaContent="우왁굳 명언 리스트" />
+      <div className="list p-4">
+        <ul className="mr-20">
+          {quotes.map((quote) => (
+            <div className="mb-4 relative" key={quote.id}>
+              <Link href={`/list/${quote.id}`}>
+                <QuoteTemplate width={350} quote={quote.message} />
+              </Link>
+              <button
+                className="absolute top-2/3 -right-20 bg-red-700 text-white ml-2 px-4 py-2 rounded"
+                onClick={() => handleDeleteQuote(quote.id)}
+              >
+                삭제
+              </button>
+              <p>좋아요: {quote.likes}</p>
+            </div>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }
 
