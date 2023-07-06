@@ -25,22 +25,28 @@ export default async function handler(
   const { message } = req.body;
 
   if (!message || message.length > 13)
-    return res.status(422).json({ err: "Maximum 16 characters." });
+    return res.status(422).json({ err: "Maximum 12 characters." });
 
   const userCollection = db.collection(
     process.env.USERS_COLLECTION_NAME as string
   );
 
+  const users = await userCollection.find().toArray();
+
+  if (users.find((user) => user.nickname === message))
+    return res.status(422).json({ err: "Nickname duplicated" });
+
+  const previousUpdate = users.find(
+    (user) => user.auth0Id === userSession.user.sub
+  );
   const currentDate = new Date();
-  const previousUpdate = await userCollection.findOne({
-    auth0Id: userSession.user.sub,
-  });
 
   if (previousUpdate && previousUpdate.dateNicknameChanged) {
     const lastUpdateDate = previousUpdate.dateNicknameChanged;
     const timeSinceLastUpdate =
       currentDate.getTime() - lastUpdateDate.getTime();
     const oneDayInMillis = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    // const oneDayInMillis = 1000; // for debugging
 
     if (timeSinceLastUpdate < oneDayInMillis) {
       return res

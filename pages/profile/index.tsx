@@ -18,12 +18,14 @@ export default function Profile({
   const [message, setMessage] = useState("");
   const [maxNickname, setMaxNickname] = useState(false);
   const [timeLimit, setTimeLimit] = useState(false);
+  const [isNickDup, setIsNickDup] = useState(false);
 
   const handleChangeNickname = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setMaxNickname(false);
     setTimeLimit(false);
+    setIsNickDup(false);
 
     try {
       const response = await fetch(`api/postUserNickname`, {
@@ -35,9 +37,10 @@ export default function Profile({
       });
       const { nickname, err } = await response.json();
 
-      if (err === "Maximum 16 charactors.") return setMaxNickname(true);
+      if (err === "Maximum 12 characters.") return setMaxNickname(true);
       if (err === "Update limit exceeded. Try again tomorrow.")
         return setTimeLimit(true);
+      if (err === "Nickname duplicated") return setIsNickDup(true);
       const errorCode = response.ok ? 0 : response.status;
       if (errorCode) return <Error statusCode={errorCode} />;
 
@@ -80,6 +83,7 @@ export default function Profile({
             닉네임 변경은 하루에 한 번만 가능합니다!
           </p>
         )}
+        {isNickDup && <p className="text-red-500 mt-2">중복된 닉네임입니다!</p>}
       </form>
       <p className="mt-5">
         가입일 : {new Date(dateRegistered).toLocaleString()}
