@@ -49,7 +49,7 @@ export default function Home() {
     <>
       <Seo title="Home" metaContent="당신의 우왁굳 명언을 만들어 보세요" />
       <h1 className="text-4xl my-4 font-bold text-center">
-        우왁굳 명언 만들기
+        우왁굳 명언 아카이브
       </h1>
       <QuoteTemplate quote={quote} />
       <form onSubmit={handleaddQuoteMessage}>
